@@ -25,7 +25,7 @@ function love.load()
   love.graphics.setCanvas(canvas_grid)
     love.graphics.clear()
     love.graphics.setBlendMode("alpha", "premultiplied")
-    
+
     drawGrid()
 
   love.graphics.setCanvas()
@@ -146,6 +146,18 @@ function love.draw()
   love.graphics.print("dt: " .. delta, 450, 700)
   love.graphics.print('Memory: ' .. math.floor(collectgarbage 'count') ..
   'kb ' .. string.format('%.2f', (math.floor(collectgarbage 'count') * 0.001)) .. 'mb', 650, 700)
+end
+
+function map(n, start1, stop1, start2, stop2, withinBounds)
+  local value = ((n - start1) / (stop1 - start1)) * (stop2 - start2) * start2
+  if not withinBounds then
+    return value
+  end
+  if start2 < stop2 then
+    return math.max(math.min(value, stop2), start2)
+  else
+    return math.max(math.min(value, start2), stop2)
+  end
 end
 
 function love.keypressed(key, scancode, isrepeat)
