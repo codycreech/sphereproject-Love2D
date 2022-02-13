@@ -1,6 +1,7 @@
 require 'pattern'
 require 'grid'
-require 'sphere'
+-- require 'sphere'
+require 'globe'
 require 'simple-slider'
 local nuklear = require 'nuklear'
 local ui, ui_grid, mousex, mousey, canvas_sphere_x, canvas_sphere_y
@@ -16,8 +17,10 @@ function love.load()
   canvas_sphere_scale = 150
   delta = 0
 
-  nodes = sphere.nodes
-	edges = sphere.edges
+  -- nodes = sphere.nodes
+	-- edges = sphere.edges
+
+  loadGlobe()
 
   loadGrid()
 
@@ -65,35 +68,46 @@ function love.update(dt)
   love.graphics.setCanvas(canvas_sphere)
     love.graphics.clear()
 
-    nextNode = 14
-    grid_row = 1
+    -- nextNode = 14
+    -- grid_row = 1
+    --
+    -- for i = 1, #nodes, 1 do
+  	-- 	node = nodes[i]
+    --   radius = 2
+    --   margin = 5
+    --   if grid_row > 16 then
+    --     grid_row = 1
+    --   end
+    --
+    --   local p = grid[1][1]
+    --
+    --   if node == nextNode then
+    --     love.graphics.setColor(p.c)
+    --   else
+    --     love.graphics.setColor(nodes[i].color)
+    --   end
+    --
+  	-- 	love.graphics.points(node.x*canvas_sphere_scale+centerX, node.y*canvas_sphere_scale+centerY)
+    --   love.graphics.circle('fill', node.x*canvas_sphere_scale+centerX, node.y*canvas_sphere_scale+centerY, radius)
+    --
+    --   if mousex >= node.x*canvas_sphere_scale+centerX - (radius+margin) and mousex <= (radius+margin) + node.x*canvas_sphere_scale+centerX and
+    --   mousey >= node.y*canvas_sphere_scale+centerY - (radius+margin) and mousey <= (radius+margin) + node.y*canvas_sphere_scale+centerY then
+    --     love.graphics.setColor(1, 1, 1)
+    --     love.graphics.print(i, mousex+15, mousey+15)
+    --   end
+    --
+  	-- end
 
-    for i = 1, #nodes, 1 do
-  		node = nodes[i]
-      radius = 2
-      margin = 5
-      if grid_row > 16 then
-        grid_row = 1
+    -- print(globe[1][1][1])
+    love.graphics.setColor(1, 1, 1)
+    radius = 2
+    for i,v in ipairs(globe) do
+      for j,v2 in ipairs(v) do
+        -- love.graphics.points(v2[1]*canvas_sphere_scale+centerX, v2[2]*canvas_sphere_scale+centerY)
+        love.graphics.circle('fill', v2[1]*canvas_sphere_scale+centerX, v2[2]*canvas_sphere_scale+centerY, radius)
+        -- print(v2[2])
       end
-
-      local p = grid[1][1]
-
-      if node == nextNode then
-        love.graphics.setColor(p.c)
-      else
-        love.graphics.setColor(nodes[i].color)
-      end
-
-  		love.graphics.points(node.x*canvas_sphere_scale+centerX, node.y*canvas_sphere_scale+centerY)
-      love.graphics.circle('fill', node.x*canvas_sphere_scale+centerX, node.y*canvas_sphere_scale+centerY, radius)
-
-      if mousex >= node.x*canvas_sphere_scale+centerX - (radius+margin) and mousex <= (radius+margin) + node.x*canvas_sphere_scale+centerX and
-      mousey >= node.y*canvas_sphere_scale+centerY - (radius+margin) and mousey <= (radius+margin) + node.y*canvas_sphere_scale+centerY then
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.print(i, mousex+15, mousey+15)
-      end
-
-  	end
+    end
 
     love.graphics.reset()
 
@@ -139,7 +153,7 @@ function love.draw()
   love.graphics.print("Size of pattern: " .. #grid_pattern*#grid_pattern[1], 10, 700)
   love.graphics.print("Size of grid: " .. #grid*#grid[1], 200, 700)
   love.graphics.print("FPS: " .. love.timer.getFPS(), 350, 700)
-  love.graphics.print("Nodes: "..#nodes, 10, 725)
+  -- love.graphics.print("Nodes: "..#nodes, 10, 725)
   love.graphics.print("(Rotate sphere with left mouse button)" , 200, 725)
   love.graphics.print("(Zoom in/out with up/down)", 450, 725)
   love.graphics.print('Mouse Coordinates: '..'x='..mousex..' y='..mousey, 650, 725)
@@ -194,23 +208,42 @@ end
 function rotateY3D(alpha)
 	sin = math.sin(alpha)
 	cos = math.cos(alpha)
-	for a = 1, #nodes, 1 do
-		node = nodes[a]
-		x = node.x
-		z = node.z
-		node.x = (x * cos - z * sin)
-		node.z = (z * cos + x * sin)
-	end
+	-- for a = 1, #nodes, 1 do
+	-- 	node = nodes[a]
+	-- 	x = node.x
+	-- 	z = node.z
+	-- 	node.x = (x * cos - z * sin)
+	-- 	node.z = (z * cos + x * sin)
+	-- end
+  for i,v in ipairs(globe) do
+    for j,v2 in ipairs(v) do
+      local node = v2
+      local x = v2[1]
+      local z = v2[3]
+      v2[1] = (x * cos - z * sin)
+      v2[3] = (z * cos + x * sin)
+    end
+  end
+
 end
 
 function rotateX3D(alpha)
 	sin = math.sin(alpha)
 	cos = math.cos(alpha)
-	for a = 1, #nodes, 1 do
-		node = nodes[a]
-		y = node.y
-		z = node.z
-		node.y = (y * cos - z * sin)
-		node.z = (z * cos + y * sin)
-	end
+	-- for a = 1, #nodes, 1 do
+	-- 	node = nodes[a]
+	-- 	y = node.y
+	-- 	z = node.z
+	-- 	node.y = (y * cos - z * sin)
+	-- 	node.z = (z * cos + y * sin)
+	-- end
+  for i,v in ipairs(globe) do
+    for j,v2 in ipairs(v) do
+      local node = v2
+      local y = v2[2]
+      local z = v2[3]
+      v2[2] = (y * cos - z * sin)
+      v2[3] = (z * cos + y * sin)
+    end
+  end
 end
